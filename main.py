@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QCalendarWidget, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit
-from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox
 
 from naver import executeNaver
 from twitter import executeTwitter
@@ -24,8 +25,8 @@ class Window(QWidget):
         fromLabel.setAlignment(Qt.AlignCenter)
 
         fromCalBox = QVBoxLayout()
-        fromCalBox.addWidget(fromLabel);
-        fromCalBox.addWidget(fromCal);
+        fromCalBox.addWidget(fromLabel)
+        fromCalBox.addWidget(fromCal)
 
         toCal = QCalendarWidget(self)
         toCal.setGridVisible(True)
@@ -46,19 +47,23 @@ class Window(QWidget):
         idLabel = QLabel('아이디: ', self)
         inputField = QLineEdit(self)
 
-        twitterBtn = QPushButton('트위터', self)
-        twitterBtn.resize(twitterBtn.sizeHint())
-        twitterBtn.clicked.connect(lambda: executeTwitter(inputField.text(), fromCal.selectedDate().toString('yyyy.MM.dd'), toCal.selectedDate().toString('yyyy.MM.dd')))
-
         naverBtn = QPushButton('네이버', self)
         naverBtn.resize(naverBtn.sizeHint())
-        naverBtn.clicked.connect(lambda: executeNaver(inputField.text(), fromCal.selectedDate().toString('yyyy.MM.dd'), toCal.selectedDate().toString('yyyy.MM.dd')))
+        naverBtn.clicked.connect(lambda: executeNaver(inputField.text(), fromCal.selectedDate().toString('yyyy.MM.dd'), toCal.selectedDate().toString('yyyy.MM.dd'))
+                                    if (inputField.text() != '') \
+                                    else QMessageBox.about(self, "에러", "ID가 비어있습니다"))
+
+        twitterBtn = QPushButton('트위터', self)
+        twitterBtn.resize(twitterBtn.sizeHint())
+        twitterBtn.clicked.connect(lambda: executeTwitter(inputField.text(), fromCal.selectedDate().toString('yyyy.MM.dd'), toCal.selectedDate().toString('yyyy.MM.dd'))
+                                    if (inputField.text() != '') \
+                                    else QMessageBox.about(self, "에러", "ID가 비어있습니다"))
 
         inputBox = QHBoxLayout()
-        inputBox.addWidget(idLabel);
-        inputBox.addWidget(inputField);
-        inputBox.addWidget(naverBtn);
-        inputBox.addWidget(twitterBtn);
+        inputBox.addWidget(idLabel)
+        inputBox.addWidget(inputField)
+        inputBox.addWidget(naverBtn)
+        inputBox.addWidget(twitterBtn)
 
         entireBox = QVBoxLayout()
         entireBox.addLayout(calBox)
@@ -66,9 +71,6 @@ class Window(QWidget):
 
         self.setLayout(entireBox)
         self.show()
-    
-    def showDate(self, date):
-        self.lbl.setText(date.toString())
 
 if __name__ == '__main__':
    app = QApplication(sys.argv)

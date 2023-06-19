@@ -1,12 +1,13 @@
 import time
-from datetime import datetime, timedelta
+
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from openpyxl import Workbook
 
-def executeNaver(naver_id, date_from, date_to):
+def executeNaver(naver_id: str, date_from: str, date_to: str):
     chromedriver_path = 'chromedriver.exe'
     blog_url = f'https://m.blog.naver.com/{naver_id}?categoryNo=0&listStyle=card'
 
@@ -35,6 +36,10 @@ def executeNaver(naver_id, date_from, date_to):
     while True:
         length = len(driver.find_elements(By.CLASS_NAME, 'card__WjujK'))
         for i in range(length):
+            post_elements = driver.find_elements(By.CLASS_NAME, 'btn_close._btn_close')
+            if post_elements:
+                post_elements[0].click()
+
             post_elements = driver.find_elements(By.CLASS_NAME, 'card__WjujK')
             element = post_elements[i]
 
@@ -132,7 +137,7 @@ def executeNaver(naver_id, date_from, date_to):
                 ])
 
     # 엑셀 파일 저장
-    excel_file_path = 'blog_posts.xlsx'
-    wb.save(excel_file_path)
+    excel_file_name = f'naver_{naver_id}_{date_from.replace(".", "-")}_{date_to.replace(".", "-")}.xlsx'
+    wb.save(excel_file_name)
 
-    print(f'Excel 파일이 생성되었습니다: {excel_file_path}')
+    print(f'Excel 파일이 생성되었습니다: {excel_file_name}')

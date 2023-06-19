@@ -1,12 +1,13 @@
 import time
-from datetime import datetime, timedelta
+
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from openpyxl import Workbook
 
-def executeTwitter(twitter_id, date_from, date_to):
+def executeTwitter(twitter_id: str, date_from: str, date_to: str):
     chromedriver_path = './chromedriver.exe'
     twitter_profile_url = f'https://twitter.com/{twitter_id}'
 
@@ -134,7 +135,7 @@ def executeTwitter(twitter_id, date_from, date_to):
                 ])
 
     # 엑셀 파일 저장
-    excel_file_path = 'tweets.xlsx'
-    wb.save(excel_file_path)
+    excel_file_name = f'twitter_{twitter_id}_{date_from.replace(".", "-")}_{date_to.replace(".", "-")}.xlsx'
+    wb.save(excel_file_name)
 
-    print(f'Excel 파일이 생성되었습니다: {excel_file_path}')
+    print(f'Excel 파일이 생성되었습니다: {excel_file_name}')
