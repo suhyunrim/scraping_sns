@@ -1,3 +1,4 @@
+import os
 import time
 
 from datetime import datetime
@@ -8,27 +9,26 @@ from selenium.webdriver.chrome.options import Options
 from openpyxl import Workbook
 
 def executeNaver(naver_id: str, date_from: str, date_to: str):
+    os.system("taskkill /IM chrome.exe /F")
+
+    os.startfile(f"execute_chrome.bat")
+
     chromedriver_path = 'chromedriver.exe'
     blog_url = f'https://m.blog.naver.com/{naver_id}?categoryNo=0&listStyle=card'
 
     options = Options()
     options.add_argument("--start-maximized")
+    options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     service = Service(chromedriver_path)
 
     driver = webdriver.Chrome(service=service, options=options)
-
-    driver.get('https://nid.naver.com/nidlogin.login')
-
-    driver.find_element(By.CSS_SELECTOR, '#id').send_keys(naver_id)
-
-    time.sleep(30)
 
     driver.get(blog_url)
 
     date_from_obj = datetime.strptime(date_from, '%Y.%m.%d')
     date_to_obj = datetime.strptime(date_to, '%Y.%m.%d')
 
-    time.sleep(2)
+    time.sleep(3)
 
     posts = []
     date_obj = None
@@ -77,13 +77,13 @@ def executeNaver(naver_id: str, date_from: str, date_to: str):
 
             title.click()
             
-            time.sleep(1)
+            time.sleep(1.5)
 
             category = driver.find_element(By.CLASS_NAME, 'blog_category').text
 
             driver.execute_script("window.history.go(-1)")
 
-            time.sleep(1)
+            time.sleep(1.5)
 
             posts.append({
                 'Title': titleText,
@@ -105,7 +105,7 @@ def executeNaver(naver_id: str, date_from: str, date_to: str):
 
         # 스크롤 내리기
         driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-        time.sleep(2)  # 페이지 로딩을 위해 2초 대기
+        time.sleep(3)
 
     # 크롬 드라이버 종료
     driver.quit()
@@ -141,3 +141,4 @@ def executeNaver(naver_id: str, date_from: str, date_to: str):
     wb.save(excel_file_name)
 
     print(f'Excel 파일이 생성되었습니다: {excel_file_name}')
+    os.system("taskkill /IM chrome.exe /F")

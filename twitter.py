@@ -1,3 +1,4 @@
+import os
 import time
 
 from datetime import datetime
@@ -8,11 +9,16 @@ from selenium.webdriver.chrome.options import Options
 from openpyxl import Workbook
 
 def executeTwitter(twitter_id: str, date_from: str, date_to: str):
+    os.system("taskkill /IM chrome.exe /F")
+
+    os.startfile(f"execute_chrome.bat")
+
     chromedriver_path = './chromedriver.exe'
     twitter_profile_url = f'https://twitter.com/{twitter_id}'
 
     options = Options()
     options.add_argument("--start-maximized")  # 전체화면으로 실행
+    options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     service = Service(chromedriver_path)
 
     driver = webdriver.Chrome(service=service, options=options)
@@ -106,7 +112,7 @@ def executeTwitter(twitter_id: str, date_from: str, date_to: str):
         driver.execute_script(f'window.scrollTo(0, document.body.clientHeight * {scrollIdx});')
         scrollIdx = scrollIdx + 1
 
-        time.sleep(2)  # 페이지 로딩을 위해 2초 대기
+        time.sleep(3)
 
     # 크롬 드라이버 종료
     driver.quit()
@@ -139,3 +145,4 @@ def executeTwitter(twitter_id: str, date_from: str, date_to: str):
     wb.save(excel_file_name)
 
     print(f'Excel 파일이 생성되었습니다: {excel_file_name}')
+    os.system("taskkill /IM chrome.exe /F")
