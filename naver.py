@@ -1,7 +1,7 @@
 import os
 import time
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -26,7 +26,7 @@ def executeNaver(naver_id: str, date_from: str, date_to: str):
     driver.get(blog_url)
 
     date_from_obj = datetime.strptime(date_from, '%Y.%m.%d')
-    date_to_obj = datetime.strptime(date_to, '%Y.%m.%d')
+    date_to_obj = datetime.strptime(date_to, '%Y.%m.%d') + timedelta(days=1)
 
     time.sleep(3)
 
@@ -95,31 +95,25 @@ def executeNaver(naver_id: str, date_from: str, date_to: str):
                 'SympathyCount': sympathy_Count,
                 'CommentCount': comment_Count})
 
-        # 기간 초과
         if date_obj < date_from_obj:
             break
 
-        # 마지막까지 도달함
         if driver.find_elements(By.CLASS_NAME, 'scroll_top_button__ntlo_'):
             break;
 
-        # 스크롤 내리기
         driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
         time.sleep(3)
 
-    # 크롬 드라이버 종료
     driver.quit()
 
-    # 추출한 포스팅을 엑셀 파일로 저장
     wb = Workbook()
     ws = wb.active
 
-    # 헤더 추가
     ws.append(['No.', '월', '일자', '내용', 'URL', '구분', '카테고리', '제작', '공감', '댓글', '참여', '조회 수', '비고'])
 
     posts.reverse()
 
-    # 포스팅 데이터 추가
+    rowCount = 1
     for post in posts:
         ws.append(['',
                     f'{post["Month"]}월',
@@ -133,10 +127,12 @@ def executeNaver(naver_id: str, date_from: str, date_to: str):
                     post['CommentCount'],
                     post['SympathyCount'] + post['CommentCount'],
                     post['ReadCount'],
-                    ''
-                ])
+                    ''])
+        rowCount = rowCount + 1
+        urlCell = ws[f'E{rowCount}']
+        urlCell.hyperlink = post['URL']
+        urlCell.style = "Hyperlink"
 
-    # 엑셀 파일 저장
     excel_file_name = f'naver_{naver_id}_{date_from.replace(".", "-")}_{date_to.replace(".", "-")}.xlsx'
     wb.save(excel_file_name)
 
