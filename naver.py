@@ -26,7 +26,7 @@ def executeNaver(naver_id: str, date_from: str, date_to: str):
     driver.get(blog_url)
 
     date_from_obj = datetime.strptime(date_from, '%Y.%m.%d')
-    date_to_obj = datetime.strptime(date_to, '%Y.%m.%d') + timedelta(days=1)
+    date_to_obj = datetime.strptime(date_to, '%Y.%m.%d') + timedelta(days=1) - timedelta(seconds=1)
 
     time.sleep(3)
 
@@ -75,11 +75,12 @@ def executeNaver(naver_id: str, date_from: str, date_to: str):
             if element.find_elements(By.CLASS_NAME, 'comment_btn__lcx93'):
                 comment_Count = int(element.find_element(By.CLASS_NAME, 'comment_btn__lcx93').text.strip())
 
-            title.click()
-            
+            driver.get(url)
+
             time.sleep(1.5)
 
-            category = driver.find_element(By.CLASS_NAME, 'blog_category').text
+            driver.switch_to.frame('mainFrame')
+            category = driver.find_element(By.ID, 'selectedMenu').text
 
             driver.execute_script("window.history.go(-1)")
 

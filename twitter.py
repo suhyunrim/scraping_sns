@@ -26,7 +26,7 @@ def executeTwitter(twitter_id: str, date_from: str, date_to: str):
     driver.get(twitter_profile_url)
 
     date_from_obj = datetime.strptime(date_from, '%Y.%m.%d')
-    date_to_obj = datetime.strptime(date_to, '%Y.%m.%d') + timedelta(days=1)
+    date_to_obj = datetime.strptime(date_to, '%Y.%m.%d') + timedelta(days=1) - timedelta(seconds=1)
 
     time.sleep(3)
 
